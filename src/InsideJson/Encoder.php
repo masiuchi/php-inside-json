@@ -90,6 +90,6 @@ class Encoder
      */
     private function _shouldEncode($value)
     {
-        return $value === $this->_top || $value->isEncoded();
+        return $value === $this->_top || $value->isInside();
     }
 }

@@ -226,11 +226,11 @@ class Json implements ArrayAccess, Countable, IteratorAggregate
     }
 
     /**
-     * Check encode or not
+     * Check inside JSON or not
      * 
-     * @return bool encode or not
+     * @return bool inside JSON or not
      */
-    public function isEncoded()
+    public function isInside()
     {
         return $this->_inside;
     }
