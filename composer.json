@@ -1,5 +1,9 @@
 {
     "name": "masiuchi/inside-json",
+    "type": "library",
+    "description": "Codec for inside JSON",
+    "homepage": "https://github.com/masiuchi/php-inside-json",
+    "license": "MIT",
     "authors": [
         {
             "name": "Masahiro IUCHI",
