@@ -32,17 +32,17 @@ class DecoderTest extends TestCase
     protected $dec;
 
     /**
-     * Create InsideJson\Decoder instance
+     * Create InsideJson\Decoder instance for test
      * 
      * @return void
      */
-    protected function setUp(): void
+    protected function setUp()
     {
         $this->dec = new Decoder;
     }
 
     /**
-     * Test decoder output equals json_decode result
+     * Assertion that decoder output equals json_decode result
      * 
      * @param mixed $value decoder input
      * 
@@ -64,6 +64,8 @@ class DecoderTest extends TestCase
     public function testJsonDecodeBehavior()
     {
         $this->assertEqualsToJsonDecode(null);
+        $this->assertEqualsToJsonDecode(false);
+        $this->assertEqualsToJsonDecode(true);
         $this->assertEqualsToJsonDecode('');
         $this->assertEqualsToJsonDecode(1);
         $this->assertEqualsToJsonDecode('abc');

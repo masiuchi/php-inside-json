@@ -14,7 +14,7 @@
 namespace InsideJson;
 
 /**
- * JSON encoder
+ * Inside JSON encoder
  * 
  * @category InsideJson
  * @package  InsideJson
@@ -30,9 +30,9 @@ class Encoder
     public $depth = 512;
 
     /**
-     * Encode value to JSON keeping inside JSON
+     * Encode value to JSON string keeping inside JSON
      * 
-     * @param mixed $value value to be encoded to JSON
+     * @param mixed $value value to be encoded
      * 
      * @return string JSON string
      */
@@ -43,24 +43,24 @@ class Encoder
         }
 
         $this->_top = $value;
-        return $this->_encodeRecursively($value);
+        return $this->_encodeInsideJson($value);
     }
 
     /**
-     * Encode value to JSON recursively
+     * Encode inside JSON recursively
      * 
-     * @param mixed $value value to be encoded to JSON
+     * @param mixed $value value to be encoded
      * 
      * @return mixed value or JSON string
      */
-    private function _encodeRecursively($value)
+    private function _encodeInsideJson($value)
     {
         if (is_null($value) || is_scalar($value)) {
             return $value;
         }
           
         foreach ($value as $k => $v) {
-            $value[$k] = $this->_encodeRecursively($v);
+            $value[$k] = $this->_encodeInsideJson($v);
         }
 
         if ($this->_shouldEncode($value) == false) {
@@ -70,9 +70,9 @@ class Encoder
     }
 
     /**
-     * Encode value to JSON
+     * Encode value to JSON string
      * 
-     * @param mixed $value data to be encoded to JSON
+     * @param mixed $value value to be encoded
      * 
      * @return string JSON string
      */
@@ -82,11 +82,11 @@ class Encoder
     }
 
     /**
-     * Check $value should be encoded or not
+     * Check whether $value should be encoded or not
      * 
      * @param $value InsideJson\Json object
      * 
-     * @return bool encode or not
+     * @return bool value should be encoded or not
      */
     private function _shouldEncode($value)
     {

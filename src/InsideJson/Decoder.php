@@ -14,10 +14,10 @@
 namespace InsideJson;
 
 use stdClass;
-use Exception;
+use InvalidArgumentException;
 
 /**
- * JSON decoder
+ * Inside JSON decoder
  * 
  * @category InsideJson
  * @package  InsideJson
@@ -32,11 +32,11 @@ class Decoder
     public $options = 0;
 
     /**
-     * Decode JSON to value
+     * Decode JSON string and inside JSON string
      * 
      * @param string $json JSON string
      * 
-     * @return mixed
+     * @return mixed decoded value
      */
     public function decode($json)
     {
@@ -44,18 +44,18 @@ class Decoder
         if (is_null($value) || is_scalar($value)) {
             return $value;
         }
-        return $this->_decodeRecursively($value);
+        return $this->_decodeInsideJson($value);
     }
 
     /**
-     * Decode JSON to value recursively
+     * Decode inside JSON string recursively
      * 
-     * @param mixed $value   a
-     * @param bool  $encoded b
+     * @param mixed $value  value to be decoded
+     * @param bool  $inside inside JSON flag
      * 
-     * @return mixed
+     * @return mixed decoded value
      */
-    private function _decodeRecursively($value, $encoded = false)
+    private function _decodeInsideJson($value, $inside = false)
     {
         if (is_null($value)) {
             return $value;
@@ -65,30 +65,30 @@ class Decoder
                 return $value;
             }
             $decodedValue = $this->_decode($value);
-            return $this->_decodeRecursively($decodedValue, true);
+            return $this->_decodeInsideJson($decodedValue, true);
         }
  
         if (is_array($value)) {
             foreach ($value as $k => $v) {
-                $value[$k] = $this->_decodeRecursively($v);
+                $value[$k] = $this->_decodeInsideJson($v);
             }
         } elseif (is_a($value, 'stdClass')) {
             $vars = get_object_vars($value);
             foreach ($vars as $k => $v) {
-                $value->$k = $this->_decodeRecursively($v);
+                $value->$k = $this->_decodeInsideJson($v);
             }
         } else {
-            throw new Exception;
+            throw new InvalidArgumentException;
         }
-        return new Json($value, $encoded);
+        return new Json($value, $inside);
     }
 
     /**
-     * Decode JSON
+     * Decode JSON string
      * 
-     * @param string $json JSON
+     * @param string $json JSON string
      * 
-     * @return mixed decoded $value
+     * @return mixed decoded value
      */
     private function _decode($json)
     {
@@ -96,11 +96,11 @@ class Decoder
     }
 
     /**
-     * Check whether $str looks like JSON or not
+     * Check whether $str looks like JSON string or not
      * 
-     * @param string $str String to be checked
+     * @param string $str string to be checked
      * 
-     * @return bool result
+     * @return bool looks like JSON string or not
      */
     private static function _looksLikeJsonString($str)
     {

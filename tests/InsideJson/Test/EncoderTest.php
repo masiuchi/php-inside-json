@@ -34,17 +34,17 @@ class EncoderTest extends TestCase
     protected $enc;
 
     /**
-     * Create InsideJson\Encoder instance
+     * Create InsideJson\Encoder instance for test
      * 
      * @return void
      */
-    protected function setUp(): void
+    protected function setUp()
     {
         $this->enc = new Encoder;
     }
 
     /**
-     * Test encoder output equals json_encode result
+     * Assertion that encoder output equals json_encode result
      * 
      * @param mixed $value encoder input
      * 
@@ -66,6 +66,8 @@ class EncoderTest extends TestCase
     public function testJsonEncodeBehavior()
     {
         $this->assertEqualsToJsonEncode('null');
+        $this->assertEqualsToJsonEncode('false');
+        $this->assertEqualsToJsonEncode('true');
         $this->assertEqualsToJsonEncode('');
         $this->assertEqualsToJsonEncode(1);
         $this->assertEqualsToJsonEncode('abc');
@@ -94,28 +96,36 @@ class EncoderTest extends TestCase
      */
     public function testNormalNestedJson()
     {
-        $value = new Json(['a' => new Json(['b' => 2])]);
+        $value = new Json(
+            [
+                'a' => new Json(['b' => 2]),
+            ]
+        );
         $json = $this->enc->encode($value);
         $expected = '{"a":{"b":2}}';
         $this->assertEquals($expected, $json);
     }
 
     /**
-     * Test to encode object with inside JSON
+     * Test to encode object and keep inside JSON
      * 
      * @test
      * @return void
      */
     public function testKeepInsideJson()
     {
-        $value = new Json(['a' => new Json(['b' => 2], true)]);
+        $value = new Json(
+            [
+                'a' => new Json(['b' => 2], true),
+            ]
+        );
         $json = $this->enc->encode($value);
         $expected = '{"a":"{\"b\":2}"}';
         $this->assertEquals($expected, $json);
     }
 
     /**
-     * Encode object and expend inside JSON
+     * Test to encode object and expend inside JSON
      * 
      * @test
      * @return void
@@ -123,7 +133,11 @@ class EncoderTest extends TestCase
     public function testExpandInsideJson()
     {
         $enc = $this->enc;
-        $value = new Json(['a' => new Json(['b' => 2], true)]);
+        $value = new Json(
+            [
+                'a' => new Json(['b' => 2], true),
+            ]
+        );
         $json = $enc->encode($value->toArray());
         $expected = '{"a":{"b":2}}';
         $this->assertEquals($expected, $json);
