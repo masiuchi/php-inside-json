@@ -32,17 +32,17 @@ use IteratorAggregate;
 class Json implements ArrayAccess, Countable, IteratorAggregate
 {
     private $_value = [];
-    private $_encoded = false;
+    private $_inside = false;
 
     /**
      * Create Json instance from value
      * 
-     * @param mixed $value   value to be Json instance
-     * @param bool  $encoded encoded flag
+     * @param mixed $value  value to be Json instance
+     * @param bool  $inside inside JSON flag
      * 
      * @return mixed null or scalar value or Json instance
      */
-    public static function toJson($value, $encoded = false)
+    public static function toJson($value, $inside = false)
     {
         if (is_null($value)
             || is_scalar($value)
@@ -50,18 +50,18 @@ class Json implements ArrayAccess, Countable, IteratorAggregate
         ) {
             return $value;
         }
-        return $json = new Json($value, $encoded);
+        return $json = new Json($value, $inside);
     }
 
     /**
      * Constructor
      * 
-     * @param mixed $value   array or stdClass
-     * @param bool  $encoded encoded flag
+     * @param mixed $value  array or stdClass
+     * @param bool  $inside inside Json flag
      */
-    public function __construct($value = [], $encoded = false)
+    public function __construct($value = [], $inside = false)
     {
-        $this->_encoded = $encoded;
+        $this->_inside = $inside;
         $this->_value = $this->_initializeValue($value);
     }
 
@@ -137,7 +137,7 @@ class Json implements ArrayAccess, Countable, IteratorAggregate
 
         $initializedValue = [];
         foreach ($vars as $k => $v) {
-            $initializedValue[$k] = self::toJson($v, $this->_encoded);
+            $initializedValue[$k] = self::toJson($v, $this->_inside);
         }
 
         return $initializedValue;
@@ -232,7 +232,7 @@ class Json implements ArrayAccess, Countable, IteratorAggregate
      */
     public function isEncoded()
     {
-        return $this->_encoded;
+        return $this->_inside;
     }
 
     /**
