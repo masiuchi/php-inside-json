@@ -78,7 +78,11 @@ class Encoder
      */
     private function _encode($value)
     {
-        return json_encode($value, $this->options, $this->depth);
+        if (version_compare(PHP_VERSION, '5.4') == 0) {
+            return json_encode($value, $this->options);
+        } else {
+            return json_encode($value, $this->options, $this->depth);
+        }
     }
 
     /**
