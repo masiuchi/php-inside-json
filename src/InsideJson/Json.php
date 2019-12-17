@@ -32,7 +32,7 @@ use IteratorAggregate;
 class Json implements ArrayAccess, Countable, IteratorAggregate
 {
     private $_value = [];
-    private $_inside = false;
+    public $inside = false;
 
     /**
      * Create Json instance from value
@@ -61,7 +61,7 @@ class Json implements ArrayAccess, Countable, IteratorAggregate
      */
     public function __construct($value = [], $inside = false)
     {
-        $this->_inside = $inside;
+        $this->inside = $inside;
         $this->_value = $this->_initializeValue($value);
     }
 
@@ -88,7 +88,7 @@ class Json implements ArrayAccess, Countable, IteratorAggregate
 
         $initializedValue = [];
         foreach ($vars as $k => $v) {
-            $initializedValue[$k] = self::toJson($v, $this->_inside);
+            $initializedValue[$k] = self::toJson($v, $this->inside);
         }
 
         return $initializedValue;
@@ -223,16 +223,6 @@ class Json implements ArrayAccess, Countable, IteratorAggregate
     public function getIterator()
     {
         return new ArrayIterator($this->_value);
-    }
-
-    /**
-     * Check inside JSON or not
-     * 
-     * @return bool inside JSON or not
-     */
-    public function isInside()
-    {
-        return $this->_inside;
     }
 
     /**

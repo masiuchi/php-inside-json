@@ -124,6 +124,20 @@ class JsonTest extends TestCase
     }
 
     /**
+     * Test constructor with inside flag
+     * 
+     * @test
+     * @return void
+     */
+    public function testConstructorWithInsideFlag()
+    {
+        $obj = new Json;
+        $this->assertNotTrue($obj->inside);
+        $obj->inside = true;
+        $this->assertTrue($obj->inside);
+    }
+
+    /**
      * Test stdClass behavior
      *
      * @test
@@ -224,21 +238,6 @@ class JsonTest extends TestCase
                 $this->assertEquals($value, $parentArray[$key]);
             }
         }
-    }
-
-    /**
-     * Test isInside method
-     * 
-     * @test
-     * @return void
-     */
-    public function testIsInside()
-    {
-        $objIsInside = new Json([], true);
-        $this->assertTrue($objIsInside->isInside());
-
-        $objIsNotInside = new Json;
-        $this->assertNotTrue($objIsNotInside->isInside());
     }
 
     /**
