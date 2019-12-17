@@ -16,6 +16,7 @@
 use PHPUnit\Framework\TestCase;
 
 use InsideJson\Json;
+use stdClass;
 
 /**
  * Tests for InsideJson\Json
@@ -28,49 +29,6 @@ use InsideJson\Json;
  */
 class JsonTest extends TestCase
 {
-
-    /**
-     * Test constructor with array
-     * 
-     * @test
-     * @return void
-     */
-    public function testConstructorWithArray()
-    {
-        $obj = new Json([ 1, 2, 3 ]);
-
-        $this->assertInstanceOf('InsideJson\Json', $obj);
-    }
-
-    /**
-     * Test constructor with associative array
-     * 
-     * @test
-     * @return void
-     */
-    public function testConstructorWithAssociativeArray()
-    {
-        $obj = new Json([ 'a' => 1, 'b' => 2 ]);
-
-        $this->assertInstanceOf('InsideJson\Json', $obj);
-    }
-
-    /**
-     * Test constructor with nested associative array
-     * 
-     * @test
-     * @return void
-     */
-    public function testConstructorWithNestedAssociativeArray()
-    {
-        $obj = new Json([ 'a' => [ 'b' => 1 ], 'c' => [ 1,2,3 ], 'd' => 4 ]);
-
-        $this->assertInstanceOf('InsideJson\Json', $obj);
-        $this->assertInstanceOf('InsideJson\Json', $obj['a']);
-        $this->assertInstanceOf('InsideJson\Json', $obj['c']);
-        $this->assertTrue(is_scalar($obj['d']));
-    }
-
     /**
      * Test constructor without value
      * 
@@ -87,7 +45,7 @@ class JsonTest extends TestCase
      * Test constructor with null value
      * 
      * @test
-     * @expectedException Exception
+     * @expectedException InvalidArgumentException
      * 
      * @return void
      */
@@ -100,7 +58,7 @@ class JsonTest extends TestCase
      * Test constructor with scalar value
      * 
      * @test
-     * @expectedException Exception
+     * @expectedException InvalidArgumentException
      * 
      * @return void
      */
@@ -109,6 +67,61 @@ class JsonTest extends TestCase
         new Json(1);
     }
 
+    /**
+     * Test constructor with Json instance
+     * 
+     * @test
+     * @expectedException InvalidArgumentException
+     * 
+     * @return void
+     */
+    public function testConstructorWithJsonInstance()
+    {
+        new Json(new Json);
+    }
+
+    /**
+     * Test constructor with array
+     * 
+     * @test
+     * @return void
+     */
+    public function testConstructorWithArray()
+    {
+        $obj = new Json(
+            [
+                1,
+                [ 2, 3 ],
+                [ 'a' => 4 ],
+            ]
+        );
+
+        $this->assertInstanceOf('InsideJson\Json', $obj);
+        $this->assertInstanceOf('InsideJson\Json', $obj[1]);
+        $this->assertInstanceOf('InsideJson\Json', $obj[2]);
+    }
+
+    /**
+     * Test constructor with associative array
+     * 
+     * @test
+     * @return void
+     */
+    public function testConstructorWithAssociativeArray()
+    {
+        $obj = new Json(
+            [
+                'a' => [ 'b' => 1 ],
+                'c' => [ 1, 2, 3 ],
+                'd' => 4,
+            ]
+        );
+
+        $this->assertInstanceOf('InsideJson\Json', $obj);
+        $this->assertInstanceOf('InsideJson\Json', $obj['a']);
+        $this->assertInstanceOf('InsideJson\Json', $obj['c']);
+        $this->assertTrue(is_scalar($obj['d']));
+    }
 
     /**
      * Test stdClass behavior
@@ -134,27 +147,6 @@ class JsonTest extends TestCase
     }
 
     /**
-     * Test associative array behavior
-     * 
-     * @test
-     * @return void
-     */
-    public function testAssociativeArrayBehavior()
-    {
-        $obj = new Json;
-        $obj['a'] = 1;
-        $obj['b'] = 2;
-
-        $this->assertEquals(1, $obj['a']);
-        $this->assertEquals(2, $obj['b']);
-        $this->assertNotTrue(isset($obj['c']));
-
-        unset($obj['a']);
-
-        $this->assertNotTrue(isset($obj['a']));
-    }
-
-    /**
      * Test array behavior
      * 
      * @test
@@ -173,6 +165,27 @@ class JsonTest extends TestCase
         $this->assertEquals(1, $obj[0]);
         $this->assertEquals(2, $obj[1]);
         $this->assertNotTrue(isset($obj[2]));
+    }
+
+    /**
+     * Test associative array behavior
+     * 
+     * @test
+     * @return void
+     */
+    public function testAssociativeArrayBehavior()
+    {
+        $obj = new Json;
+        $obj['a'] = 1;
+        $obj['b'] = 2;
+
+        $this->assertEquals(1, $obj['a']);
+        $this->assertEquals(2, $obj['b']);
+        $this->assertNotTrue(isset($obj['c']));
+
+        unset($obj['a']);
+
+        $this->assertNotTrue(isset($obj['a']));
     }
 
     /**
@@ -211,5 +224,50 @@ class JsonTest extends TestCase
                 $this->assertEquals($value, $parentArray[$key]);
             }
         }
+    }
+
+    /**
+     * Test isInside method
+     * 
+     * @test
+     * @return void
+     */
+    public function testIsInside()
+    {
+        $objIsInside = new Json([], true);
+        $this->assertTrue($objIsInside->isInside());
+
+        $objIsNotInside = new Json;
+        $this->assertNotTrue($objIsNotInside->isInside());
+    }
+
+    /**
+     * Test toArray method
+     * 
+     * @test
+     * @return void
+     */
+    public function testToArray()
+    {
+        $value = new stdClass;
+        $value->a = 1;
+        $obj = new Json($value);
+        $expected = [ 'a' => 1 ];
+        $this->assertEquals($expected, $obj->toArray());
+    }
+
+    /**
+     * Test toObject method
+     * 
+     * @test
+     * @return void
+     */
+    public function testToObject()
+    {
+        $value = [ 'a' => 1 ];
+        $obj = new Json($value);
+        $expected = new stdClass;
+        $expected->a = 1;
+        $this->assertEquals($expected, $obj->toObject());
     }
 }

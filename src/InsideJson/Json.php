@@ -17,7 +17,7 @@ use stdClass;
 use ArrayAccess;
 use ArrayIterator;
 use Countable;
-use Exception;
+use InvalidArgumentException;
 use IteratorAggregate;
 
 /**
@@ -56,13 +56,42 @@ class Json implements ArrayAccess, Countable, IteratorAggregate
     /**
      * Constructor
      * 
-     * @param mixed $value  array or stdClass
-     * @param bool  $inside inside Json flag
+     * @param array|stdClass $value  JSON value
+     * @param bool           $inside inside Json flag
      */
     public function __construct($value = [], $inside = false)
     {
         $this->_inside = $inside;
         $this->_value = $this->_initializeValue($value);
+    }
+
+    /**
+     * Initialize value
+     * 
+     * @param array|stdClass $value raw value
+     * 
+     * @return mixed initialized value
+     */
+    private function _initializeValue($value)
+    {
+        if (is_null($value) || is_scalar($value)) {
+            throw new InvalidArgumentException;
+        }
+
+        if (is_array($value)) {
+            $vars = $value;
+        } elseif (is_a($value, 'stdClass')) {
+            $vars = get_object_vars($value);
+        } else {
+            throw new InvalidArgumentException;
+        }
+
+        $initializedValue = [];
+        foreach ($vars as $k => $v) {
+            $initializedValue[$k] = self::toJson($v, $this->_inside);
+        }
+
+        return $initializedValue;
     }
 
     /**
@@ -112,35 +141,6 @@ class Json implements ArrayAccess, Countable, IteratorAggregate
     public function __get($name)
     {
         return $this->offsetGet($name);
-    }
-
-    /**
-     * Initialize value
-     * 
-     * @param mixed $value raw value
-     * 
-     * @return mixed initialized value
-     */
-    private function _initializeValue($value)
-    {
-        if (is_null($value) || is_scalar($value)) {
-            throw new Exception;
-        }
-
-        if (is_array($value)) {
-            $vars = $value;
-        } elseif (is_a($value, 'stdClass')) {
-            $vars = get_object_vars($value);
-        } else {
-            throw new Exception;
-        }
-
-        $initializedValue = [];
-        foreach ($vars as $k => $v) {
-            $initializedValue[$k] = self::toJson($v, $this->_inside);
-        }
-
-        return $initializedValue;
     }
 
     /**
@@ -262,7 +262,7 @@ class Json implements ArrayAccess, Countable, IteratorAggregate
     {
         $obj = new stdClass;
         foreach ($this->_value as $key => $value) {
-            if (is_null($value) || $is_scalar($value)) {
+            if (is_null($value) || is_scalar($value)) {
                 $obj->$key = $value;
                 continue;
             }
