@@ -11,20 +11,32 @@ $decoder = new Decoder;
 $encoder = new Encoder;
 
 # JSON string has serialized JSON string its inside.
-$json = '{"a":"{\"b\":1}"}';
+$json = '{"a":"{\"b\":1,\"c\":2}","d":3}';
 
-# decode JSON and inside JSON
+# decode JSON and inside JSON at once
 $obj = $decoder->decode($json);
 
-# manipulate JSON data
-$obj['b'] = 2;
-$obj->c = 3;
+# access decoded object by using array-access or property
+$obj['a']['b'] = 4;
+$obj->a->c = 5;
 
-# encode keeping inside JSON
-$encoder->encode($obj);  # '{"a":"{\"b\":2,\"c\":3}"}'
+# access decode object by using foreach
+foreach ($obj as $key1 => $value1) {
+  if (is_object($obj)) {
+    echo "$key1:\n";
+    foreach ($value1 as $key2 => $value2) {
+      echo "\t$key2: $value2\n";
+    }
+  } else {
+    echo "$key1: $value1\n";
+  }
+}
 
-# encode expanding inside JSON
-$encoder->encode($obj->toArray());  # '{"a":{"b":2,"c":3}}'
+# encode to JSON string keeping inside JSON
+$encoder->encode($obj);  # '{"a":"{\"b\":4,\"c\":5}","d":3}'
+
+# encode to JSON string expanding inside JSON
+$encoder->encode($obj->toArray());  # '{"a":{"b":4,"c":5},"d":3}'
 
 ```
 
