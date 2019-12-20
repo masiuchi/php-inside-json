@@ -21,7 +21,6 @@
         }
     },
     "require": {
-        "ext-dom": "*",
         "ext-json": "*"
     },
     "require-dev": {
