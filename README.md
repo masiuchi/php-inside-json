@@ -36,7 +36,7 @@ foreach ($obj as $key1 => $value1) {
 $encoder->encode($obj);  # '{"a":"{\"b\":4,\"c\":5}","d":3}'
 
 # encode to JSON string expanding inside JSON
-$encoder->encode($obj->toArray());  # '{"a":{"b":4,"c":5},"d":3}'
+json_encode($obj->toArray());  # '{"a":{"b":4,"c":5},"d":3}'
 
 ```
 
